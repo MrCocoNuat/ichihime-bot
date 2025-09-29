@@ -9,6 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "UNLICENSED",
+  "private": true,
   "type": "commonjs",
   "dependencies": {
     "discord.js": "^14.22.1",
