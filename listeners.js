@@ -4,6 +4,7 @@ const { handleMatchCommand } = require('./commands/match');
 const { handleSetFriendCodeCommand } = require('./commands/set_friend_code');
 const { handleMatchReactionAdd, handleMatchReactionRemove } = require('./reactions/match');
 const { handleCalculateScoreCommand } = require('./commands/calculate_score');
+const { handleHelloCommand } = require('./commands/hello');
 
 function fetchReactionAndMessage(reaction) {
     return (async () => {
@@ -49,7 +50,7 @@ function attachListeners(client, welcomeChannelId) {
         if (!interaction.isChatInputCommand()) return;
         const { commandName } = interaction;
         if (commandName === 'hello') {
-            await interaction.reply('Hello there! 👋');
+            await handleHelloCommand(interaction);
         }
         if (commandName === 'match') {
             await handleMatchCommand(interaction);
