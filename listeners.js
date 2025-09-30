@@ -5,6 +5,14 @@ const { handleSetFriendCodeCommand } = require('./commands/set_friend_code');
 const { handleMatchReactionAdd, handleMatchReactionRemove } = require('./reactions/match');
 const { handleCalculateScoreCommand } = require('./commands/calculate_score');
 const { handleHelloCommand } = require('./commands/hello');
+const { handleShowHandCommand } = require('./commands/show_hand');
+const {
+    COMMAND_HELLO,
+    COMMAND_MATCH,
+    COMMAND_SHOW_HAND,
+    COMMAND_CALCULATE_SCORE,
+    COMMAND_SET_FRIEND_CODE
+} = require('./commands');
 
 function fetchReactionAndMessage(reaction) {
     return (async () => {
@@ -30,36 +38,24 @@ function fetchReactionAndMessage(reaction) {
 
 function attachListeners(client, welcomeChannelId) {
     console.log('Attaching event listeners...');
-    function getPlayerMentionsWithCodes(players, callback) {
-        if (players.length === 0) return callback('');
-        let mentions = [];
-        let count = 0;
-        players.forEach(id => {
-            db.get('SELECT friendCode FROM player WHERE discordId = ?', [id], (err, row) => {
-                let code = row && row.friendCode ? row.friendCode : 'friend code not set!';
-                mentions.push(`<@${id}> - ${code}`);
-                count++;
-                if (count === players.length) {
-                    callback(mentions.join('\n'));
-                }
-            });
-        });
-    }
 
     client.on('interactionCreate', async interaction => {
         if (!interaction.isChatInputCommand()) return;
         const { commandName } = interaction;
-        if (commandName === 'hello') {
+        if (commandName === COMMAND_HELLO) {
             await handleHelloCommand(interaction);
         }
-        if (commandName === 'match') {
+        if (commandName === COMMAND_MATCH) {
             await handleMatchCommand(interaction);
         }
-        if (commandName === 'set_friend_code') {
+        if (commandName === COMMAND_SET_FRIEND_CODE) {
             await handleSetFriendCodeCommand(interaction);
         }
-        if (commandName === 'calculate_score') {
+        if (commandName === COMMAND_CALCULATE_SCORE) {
             await handleCalculateScoreCommand(interaction);
+        }
+        if (commandName === COMMAND_SHOW_HAND) {
+            await handleShowHandCommand(interaction);
         }
     });
 
