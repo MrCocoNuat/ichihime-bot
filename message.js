@@ -17,7 +17,7 @@ const MESSAGE_SHOW_HAND_VALIDATION_FAILED = 14;
 const MESSAGE_SHOW_HAND = 15;
 const MESSAGE_MATCH_TIME_VALIDATION_FAILED = 16;
 
-const decorate = (str) => (env?.toLowerCase() != "prod"? `⚠️ Bot running in environment: ${env}\n` : "") + str; 
+const decorate = (str) => ((env?.toLowerCase() != "prod" && env?.toLowerCase() != "production")? `⚠️ Bot running in environment: ${env}\n` : "") + str; 
 
 
 const welcomeMessage = (memberId) => decorate(`Welcome <@${memberId}>! Please set your Mahjong Soul friend code using /set_friend_code.`);
