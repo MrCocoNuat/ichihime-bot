@@ -1,3 +1,5 @@
+const { helloMessage } = require('../message');
+
 async function handleHelloCommand(interaction) {
         const tiles = [
             '1 Man', '2 Man', '3 Man', '4 Man', '5 Man', '6 Man', '7 Man', '8 Man', '9 Man',
@@ -6,7 +8,7 @@ async function handleHelloCommand(interaction) {
             'East', 'South', 'West', 'North', 'White Dragon', 'Green Dragon', 'Red Dragon'
         ];
         const luckyTile = tiles[Math.floor(Math.random() * tiles.length)];
-        await interaction.reply(`Hi there! Your lucky tile for today is ${luckyTile}!`);
+        await interaction.reply(helloMessage(luckyTile));
 }
 
 module.exports = {

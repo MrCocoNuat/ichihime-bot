@@ -1,5 +1,6 @@
 // commands/match.js
 const db = require('../db');
+const { matchInProgressMessage } = require('../message');
 
 function getPlayerMentionsWithCodes(players, callback) {
     if (players.length === 0) return callback('');
@@ -22,7 +23,7 @@ async function handleMatchCommand(interaction) {
     const capacity = interaction.options.getInteger('players') || 4;
     getPlayerMentionsWithCodes(players, async (playerMentions) => {
         await interaction.reply({
-            content: `Matchmaking started!\nPlayers (${players.length}/${capacity}):\n${playerMentions}\nReact with 👍 to join!`
+            content: matchInProgressMessage(players, capacity, playerMentions)
         });
         const msg = await interaction.fetchReply();
         db.run(`INSERT INTO game (messageId, channelId, players, capacity, completed) VALUES (?, ?, ?, ?, 0)`,

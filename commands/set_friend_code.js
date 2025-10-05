@@ -1,11 +1,12 @@
 // commands/set_friend_code.js
 const db = require('../db');
+const { friendCodeValidationFailedMessage, friendCodeSaveFailedMessage, friendCodeSavedMessage } = require('../message');
 
 async function handleSetFriendCodeCommand(interaction) {
     const code = interaction.options.getString('code');
     const discordId = interaction.user.id;
     if (!/^\d{1,9}$/.test(code)) {
-        interaction.reply('Friend code must be 1 to 9 digits.');
+        interaction.reply(friendCodeValidationFailedMessage());
         return;
     }
     const paddedCode = code.padStart(9, '0');
@@ -13,9 +14,9 @@ async function handleSetFriendCodeCommand(interaction) {
         [discordId, paddedCode, paddedCode],
         err => {
             if (err) {
-                interaction.reply('Failed to set friend code.');
+                interaction.reply(friendCodeSaveFailedMessage());
             } else {
-                interaction.reply(`Your friend code has been recorded as: ${paddedCode}`);
+                interaction.reply(friendCodeSavedMessage(paddedCode));
             }
         }
     );

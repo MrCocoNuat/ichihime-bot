@@ -1,3 +1,5 @@
+const { invalidFuMessage, requiredFuMessage, pointsTsumoMessage, pointsRonMessage } = require("../message");
+
 function handleCalculateScoreCommand(interaction) {
     // get arguments
     const han = interaction.options.getInteger('han');
@@ -5,7 +7,8 @@ function handleCalculateScoreCommand(interaction) {
     const isDealer = interaction.options.getBoolean('dealer') || false;
     const isTsumo = interaction.options.getBoolean('tsumo') || false;
     if (fu != 25 && fu % 10 !== 0) {
-        interaction.reply('Fu must be 25 or a multiple of 10.'); // 0 fu is allowed for hands that don't require fu
+        // 0 fu is allowed for hands that don't require fu
+        interaction.reply(invalidFuMessage()); 
         return;
     }
 
@@ -28,7 +31,7 @@ function handleCalculateScoreCommand(interaction) {
     }
     else {
         if (fu < 20 || fu > 110) {
-            interaction.reply('Fu is required to calculate score for this hand');
+            interaction.reply(requiredFuMessage());
             return;
         }
         basePoints = fu * Math.pow(2, han + 2);
@@ -37,10 +40,10 @@ function handleCalculateScoreCommand(interaction) {
     
     if (isTsumo){
         const pointsPerPlayer = Math.ceil(basePoints / 100) * 100;
-        interaction.reply(`A ${han}h ${fu}f ${isDealer ? 'dealer ' : ''}tsumo scores ${isDealer ? `${pointsPerPlayer * 2} all` : `${pointsPerPlayer}/${pointsPerPlayer * 2}`}`);
+        interaction.reply(pointsTsumoMessage(han, fu, isDealer, pointsPerPlayer));
     } else {
         const totalPoints = Math.ceil(basePoints * (isDealer ? 6 : 4) / 100) * 100;
-        interaction.reply(`A ${han}h ${fu}f ${isDealer ? 'dealer ' : ''}ron scores ${totalPoints} points`);   
+        interaction.reply(pointsRonMessage(han, fu, isDealer, totalPoints));   
     }
 }
 

@@ -13,6 +13,7 @@ const {
     COMMAND_CALCULATE_SCORE,
     COMMAND_SET_FRIEND_CODE
 } = require('./commands');
+const { welcomeMessage } = require('./message');
 
 function fetchReactionAndMessage(reaction) {
     return (async () => {
@@ -74,7 +75,7 @@ function attachListeners(client, welcomeChannelId) {
         const channel = member.guild.channels.cache.get(welcomeChannelId);
         if (!channel) return;
         channel.send({
-            content: `Welcome <@${member.id}>! Please set your Mahjong Soul friend code using /set_friend_code.`
+            content: welcomeMessage(member.id)
         });
     });
 

@@ -1,24 +1,25 @@
 // reactions/match.js
 const db = require('../db');
 const { getPlayerMentionsWithCodes } = require('../commands/match');
+const { matchCompletedMessage, matchJoinNotifMessage, matchInProgressMessage, matchCanceledMessage } = require('../message');
 
 function markGameCompleted(reaction, game, players, playerMentions, forced = false) {
     db.run(`UPDATE game SET players = ?, completed = 1 WHERE messageId = ?`, [JSON.stringify(players), reaction.message.id]);
-    const content = `Matchmaking completed${forced ? ' (skipped)' : ''}!\nPlayers (${players.length}/${game.capacity}):\n${playerMentions}`;
+    const content = matchCompletedMessage(forced, players, game.capacity, playerMentions);
     reaction.message.edit(content);
     // re-notify players to join the match
-    reaction.message.reply({ content: `Please join the match!\n${players.map(id => `<@${id}>`).join('\n')}` });
+    reaction.message.reply({ content: matchJoinNotifMessage(players)});
 }
 
 function updateGamePlayersAndMessage(reaction, players, playerMentions, game) {
-    const content = `Matchmaking started!\nPlayers (${players.length}/${game.capacity}):\n${playerMentions}\nReact with 👍 to join!`;
+    const content = matchInProgressMessage(players, game.capacity, playerMentions);
     db.run(`UPDATE game SET players = ? WHERE messageId = ?`, [JSON.stringify(players), reaction.message.id]);
     reaction.message.edit(content);
 }
 
 function markGameCanceled(reaction) {
     db.run(`UPDATE game SET completed = -1 WHERE messageId = ?`, [reaction.message.id]);
-    reaction.message.edit('Matchmaking canceled.');
+    reaction.message.edit(matchCanceledMessage());
 }
 
 function handleMatchReactionAdd(reaction, user) {
