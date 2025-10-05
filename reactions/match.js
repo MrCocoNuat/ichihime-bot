@@ -6,14 +6,14 @@ const { updateGameCanceled, updateGamePlayers, updateGameCompleted, selectGame }
 
 function markGameCompleted(reaction, game, players, playerMentions, forced = false) {
     updateGameCompleted(reaction.message.id, players);
-    reaction.message.edit(matchCompletedMessage(forced, players, game.capacity, playerMentions));
+    reaction.message.edit(matchCompletedMessage(forced, players, game.capacity, playerMentions, game.scheduledTime));
     // re-notify players to join the match
     reaction.message.reply({ content: matchJoinNotifMessage(players)});
 }
 
 function updateGamePlayersAndMessage(reaction, players, playerMentions, game) {
     updateGamePlayers(reaction.message.id, players);
-    reaction.message.edit(matchInProgressMessage(players, game.capacity, playerMentions));
+    reaction.message.edit(matchInProgressMessage(players, game.capacity, playerMentions, game.scheduledTime));
 }
 
 function markGameCanceled(reaction) {

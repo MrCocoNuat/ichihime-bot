@@ -19,7 +19,11 @@ const commands = [
                 .setDescription('Number of players (3-4)')
                 .setRequired(false)
                 .setMinValue(3)
-                .setMaxValue(4)),
+                .setMaxValue(4))
+        .addStringOption(option =>
+            option.setName('scheduled_time')
+                .setDescription('24-hour HH:MM format, US Eastern. Date will be today or tomorrow depending on current time.')
+                .setRequired(false)),
     new SlashCommandBuilder()
         .setName(COMMAND_SHOW_HAND)
         .setDescription('Show a graphical representation of a Mahjong hand')

@@ -15,6 +15,7 @@ const MESSAGE_FRIEND_CODE_SAVE_FAILED = 12;
 const MESSAGE_FRIEND_CODE_SAVED = 13;
 const MESSAGE_SHOW_HAND_VALIDATION_FAILED = 14;
 const MESSAGE_SHOW_HAND = 15;
+const MESSAGE_MATCH_TIME_VALIDATION_FAILED = 16;
 
 const decorate = (str) => (env?.toLowerCase() != "prod"? `⚠️ Bot running in environment: ${env}\n` : "") + str; 
 
@@ -25,8 +26,8 @@ const invalidFuMessage = () => decorate('Fu must be 25 or a multiple of 10.');
 const requiredFuMessage = () => decorate('Fu is required to calculate score for this hand');
 const pointsTsumoMessage = (han, fu, isDealer, pointsPerPlayer) => decorate(`A ${han}h ${fu > 0? `${fu}f ` : ""}${isDealer ? 'dealer ' : ''}tsumo scores ${isDealer ? `${pointsPerPlayer * 2} all` : `${pointsPerPlayer}/${pointsPerPlayer * 2}`}`);
 const pointsRonMessage = (han, fu, isDealer, totalPoints) => decorate(`A ${han}h ${fu > 0? `${fu}f ` : ""}${isDealer ? 'dealer ' : ''}ron scores ${totalPoints} points`); 
-const matchInProgressMessage = (players, capacity, playerMentions) => decorate(`Matchmaking started!\nPlayers (${players.length}/${capacity}):\n${playerMentions}\nReact with 👍 to join!`);
-const matchCompletedMessage = (forced, players, capacity, playerMentions) => decorate(`Matchmaking completed${forced ? ' (skipped)' : ''}!\nPlayers (${players.length}/${capacity}):\n${playerMentions}`);
+const matchInProgressMessage = (players, capacity, playerMentions, scheduledTime) => decorate(`Matchmaking started!\n${scheduledTime? "Scheduled for " + new Date(scheduledTime).toLocaleString('en-US', { timeZone: 'America/New_York' }) + " Eastern\n": ""}Players (${players.length}/${capacity}):\n${playerMentions}\nReact with 👍 to join!`);
+const matchCompletedMessage = (forced, players, capacity, playerMentions, scheduledTime) => decorate(`Matchmaking completed${forced ? ' (skipped)' : ''}!\n${scheduledTime? "Scheduled for " + new Date(scheduledTime).toLocaleString('en-US', { timeZone: 'America/New_York' }) + " Eastern\n": ""}Players (${players.length}/${capacity}):\n${playerMentions}`);
 const matchJoinNotifMessage = (players) => decorate(`Please join the match!\n${players.map(id => `<@${id}>`).join('\n')}`);
 const matchCanceledMessage = () => decorate('Matchmaking canceled.');
 const friendCodeValidationFailedMessage = () => decorate('Friend code must be 1 to 9 digits.');
@@ -34,6 +35,7 @@ const friendCodeSaveFailedMessage = () => decorate('Failed to set friend code.')
 const friendCodeSavedMessage = (friendCode) => decorate(`Your friend code has been recorded as: ${friendCode}`);
 const showHandValidationFailedMessage = (input) => decorate(`input "${input}" is not a valid set of tiles`);
 const showHandMessage = (tiles) => decorate(tiles.map(emojiFragment).join(''));
+const matchTimeValidationFailedMessage = () => decorate('Invalid scheduled time format. Please use HH:MM in 24-hour format.');
 
 
 function emojiFragment(tile) {
@@ -112,5 +114,6 @@ module.exports = {
     friendCodeSaveFailedMessage,
     friendCodeSavedMessage,
     showHandValidationFailedMessage,
-    showHandMessage
+    showHandMessage,
+    matchTimeValidationFailedMessage
 }

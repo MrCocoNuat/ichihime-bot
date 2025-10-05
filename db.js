@@ -11,9 +11,9 @@ function selectFriendCode(discordId, cb){
     db.get('SELECT friendCode FROM player WHERE discordId = ?', [discordId], cb);
 }
 
-function insertGame(message, players, capacity){
-    db.run(`INSERT INTO game (messageId, channelId, players, capacity, completed) VALUES (?, ?, ?, ?, 0)`,
-            [message.id, message.channel.id, JSON.stringify(players), capacity]);
+function insertGame(message, players, capacity, scheduledTime){
+    db.run(`INSERT INTO game (messageId, channelId, players, capacity, completed, scheduledTime) VALUES (?, ?, ?, ?, 0, ?)`,
+            [message.id, message.channel.id, JSON.stringify(players), capacity, scheduledTime]);
 }
 
 function updateGameCanceled(messageId){

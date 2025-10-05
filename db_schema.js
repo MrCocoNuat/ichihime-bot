@@ -16,4 +16,10 @@ db.run(`CREATE TABLE IF NOT EXISTS player (
     rating INTEGER DEFAULT 1000
 )`);
 
+
+db.run("ALTER TABLE game ADD COLUMN scheduledTime DATETIME", (err) => {
+    // Ignore error if column already exists
+});
+
+
 module.exports = db;

@@ -1,3 +1,4 @@
+const { escapeHeading } = require('discord.js');
 const { guildId } = require('../env');
 const { showHandMessage, showHandValidationFailedMessage } = require('../message');
 
@@ -52,7 +53,7 @@ async function handleShowHandCommand(interaction) {
         // Build emoji output
         interaction.reply(showHandMessage(tiles));
     } catch (e) {
-        interaction.reply(showHandValidationFailedMessage(input));
+        interaction.reply({content: showHandValidationFailedMessage(input), ephemeral: true});
     }
 }
 
