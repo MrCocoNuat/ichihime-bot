@@ -26,13 +26,13 @@ function parseScheduledDateTime(scheduledTimeStr) {
     const dateTimeMatch = scheduledTimeStr.match(/^(\d{2}):(\d{2})$/); // don't allow any other temporal components
     if (!dateTimeMatch) return null;
 
-    const scheduledTime = DateTime.fromISO(scheduledTimeStr, { zone: ianaTimezone });
+    let scheduledTime = DateTime.fromISO(scheduledTimeStr, { zone: ianaTimezone });
     if ( ! scheduledTime.isValid) return null;
 
     // Determine if the scheduled time is today or tomorrow
     if (scheduledTime <= DateTime.now()) {
         // Scheduled time is earlier than current ET time, so it's for tomorrow
-        scheduledTime.setDate(scheduledTime.getDate() + 1);
+        scheduledTime = scheduledTime.plus({days: 1});
     }
 
     return scheduledTime.toJSDate();
