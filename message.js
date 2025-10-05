@@ -16,15 +16,15 @@ const MESSAGE_FRIEND_CODE_SAVED = 13;
 const MESSAGE_SHOW_HAND_VALIDATION_FAILED = 14;
 const MESSAGE_SHOW_HAND = 15;
 
-const decorate = (str) => (env != "PROD"? `⚠️ Bot running in ${env}\n` : "") + str; 
+const decorate = (str) => (env?.toLowerCase() != "prod"? `⚠️ Bot running in environment: ${env}\n` : "") + str; 
 
 
 const welcomeMessage = (memberId) => decorate(`Welcome <@${memberId}>! Please set your Mahjong Soul friend code using /set_friend_code.`);
 const helloMessage = (tile) => decorate(`Hi there! Your lucky tile for today is ${tile}!`);
 const invalidFuMessage = () => decorate('Fu must be 25 or a multiple of 10.');
 const requiredFuMessage = () => decorate('Fu is required to calculate score for this hand');
-const pointsTsumoMessage = (han, fu, isDealer, pointsPerPlayer) => decorate(`A ${han}h ${fu}f ${isDealer ? 'dealer ' : ''}tsumo scores ${isDealer ? `${pointsPerPlayer * 2} all` : `${pointsPerPlayer}/${pointsPerPlayer * 2}`}`);
-const pointsRonMessage = (han, fu, isDealer, totalPoints) => decorate(`A ${han}h ${fu}f ${isDealer ? 'dealer ' : ''}ron scores ${totalPoints} points`); 
+const pointsTsumoMessage = (han, fu, isDealer, pointsPerPlayer) => decorate(`A ${han}h ${fu > 0? `${fu}f ` : ""}${isDealer ? 'dealer ' : ''}tsumo scores ${isDealer ? `${pointsPerPlayer * 2} all` : `${pointsPerPlayer}/${pointsPerPlayer * 2}`}`);
+const pointsRonMessage = (han, fu, isDealer, totalPoints) => decorate(`A ${han}h ${fu > 0? `${fu}f ` : ""}${isDealer ? 'dealer ' : ''}ron scores ${totalPoints} points`); 
 const matchInProgressMessage = (players, capacity, playerMentions) => decorate(`Matchmaking started!\nPlayers (${players.length}/${capacity}):\n${playerMentions}\nReact with 👍 to join!`);
 const matchCompletedMessage = (forced, players, capacity, playerMentions) => decorate(`Matchmaking completed${forced ? ' (skipped)' : ''}!\nPlayers (${players.length}/${capacity}):\n${playerMentions}`);
 const matchJoinNotifMessage = (players) => decorate(`Please join the match!\n${players.map(id => `<@${id}>`).join('\n')}`);

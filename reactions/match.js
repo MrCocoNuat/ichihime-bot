@@ -1,31 +1,30 @@
 // reactions/match.js
-const db = require('../db');
+const db = require('../db_schema');
 const { getPlayerMentionsWithCodes } = require('../commands/match');
 const { matchCompletedMessage, matchJoinNotifMessage, matchInProgressMessage, matchCanceledMessage } = require('../message');
+const { updateGameCanceled, updateGamePlayers, updateGameCompleted, selectGame } = require('../db');
 
 function markGameCompleted(reaction, game, players, playerMentions, forced = false) {
-    db.run(`UPDATE game SET players = ?, completed = 1 WHERE messageId = ?`, [JSON.stringify(players), reaction.message.id]);
-    const content = matchCompletedMessage(forced, players, game.capacity, playerMentions);
-    reaction.message.edit(content);
+    updateGameCompleted(reaction.message.id, players);
+    reaction.message.edit(matchCompletedMessage(forced, players, game.capacity, playerMentions));
     // re-notify players to join the match
     reaction.message.reply({ content: matchJoinNotifMessage(players)});
 }
 
 function updateGamePlayersAndMessage(reaction, players, playerMentions, game) {
-    const content = matchInProgressMessage(players, game.capacity, playerMentions);
-    db.run(`UPDATE game SET players = ? WHERE messageId = ?`, [JSON.stringify(players), reaction.message.id]);
-    reaction.message.edit(content);
+    updateGamePlayers(reaction.message.id, players);
+    reaction.message.edit(matchInProgressMessage(players, game.capacity, playerMentions));
 }
 
 function markGameCanceled(reaction) {
-    db.run(`UPDATE game SET completed = -1 WHERE messageId = ?`, [reaction.message.id]);
+    updateGameCanceled(reaction.message.id);
     reaction.message.edit(matchCanceledMessage());
 }
 
 function handleMatchReactionAdd(reaction, user) {
     const validEmojis = ['❌', '👍', '✅'];
     if (user.bot || !validEmojis.includes(reaction.emoji.name)) return; 
-    db.get(`SELECT * FROM game WHERE messageId = ?`, [reaction.message.id], (err, game) => {
+    selectGame(reaction.message.id, (err, game) => {
         if (err || !game || game.completed) return; // No game found or already completed
         switch (reaction.emoji.name) {
             case '❌':
@@ -58,7 +57,7 @@ function handleMatchReactionAdd(reaction, user) {
 function handleMatchReactionRemove(reaction, user) {
     const validEmojis = ['👍'];
     if (!validEmojis.includes(reaction.emoji.name) || user.bot) return;
-    db.get(`SELECT * FROM game WHERE messageId = ?`, [reaction.message.id], (err, game) => {
+    selectGame(reaction.message.id, (err, game) => {
         if (err || !game || game.completed) return; // No game found or already completed
         switch (reaction.emoji.name) {
             case '👍': {

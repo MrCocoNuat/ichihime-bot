@@ -1,5 +1,5 @@
 // commands/match.js
-const db = require('../db');
+const { insertGame, selectFriendCode } = require('../db');
 const { matchInProgressMessage } = require('../message');
 
 function getPlayerMentionsWithCodes(players, callback) {
@@ -7,7 +7,7 @@ function getPlayerMentionsWithCodes(players, callback) {
     let mentions = [];
     let count = 0;
     players.forEach(id => {
-        db.get('SELECT friendCode FROM player WHERE discordId = ?', [id], (err, row) => {
+        selectFriendCode(id, (err, row) => {
             let code = row && row.friendCode ? row.friendCode : 'friend code not set!';
             mentions.push(`<@${id}> - ${code}`);
             count++;
@@ -25,9 +25,8 @@ async function handleMatchCommand(interaction) {
         await interaction.reply({
             content: matchInProgressMessage(players, capacity, playerMentions)
         });
-        const msg = await interaction.fetchReply();
-        db.run(`INSERT INTO game (messageId, channelId, players, capacity, completed) VALUES (?, ?, ?, ?, 0)`,
-            [msg.id, msg.channel.id, JSON.stringify(players), capacity]);
+        const message = await interaction.fetchReply();
+        insertGame(message, players, capacity);
     });
 }
 

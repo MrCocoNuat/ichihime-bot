@@ -1,5 +1,4 @@
 // listeners.js
-const db = require('./db');
 const { handleMatchCommand } = require('./commands/match');
 const { handleSetFriendCodeCommand } = require('./commands/set_friend_code');
 const { handleMatchReactionAdd, handleMatchReactionRemove } = require('./reactions/match');
