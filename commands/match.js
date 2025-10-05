@@ -1,6 +1,8 @@
 // commands/match.js
+const { ianaTimezone } = require('../base');
 const { insertGame, selectFriendCode } = require('../db');
 const { matchInProgressMessage, matchTimeValidationFailedMessage } = require('../message');
+const { DateTime } = require("luxon");
 
 function getPlayerMentionsWithCodes(players, callback) {
     if (players.length === 0) return callback('');
@@ -19,33 +21,21 @@ function getPlayerMentionsWithCodes(players, callback) {
 }
 
 function parseScheduledDateTime(scheduledTimeStr) {
-    // HH:MM format
+    // mandate HH:MM format
     if (!scheduledTimeStr) return null;
-    const dateTimeMatch = scheduledTimeStr.match(/^(\d{2}):(\d{2})$/);
+    const dateTimeMatch = scheduledTimeStr.match(/^(\d{2}):(\d{2})$/); // don't allow any other temporal components
     if (!dateTimeMatch) return null;
 
-    let scheduledHour = parseInt(dateTimeMatch[1], 10);
-    let scheduledMinute = parseInt(dateTimeMatch[2], 10);
-    if (scheduledHour < 0 || scheduledHour > 23 || scheduledMinute < 0 || scheduledMinute > 59) return null;
-    console.log(`Parsed scheduled time: ${scheduledHour}:${scheduledMinute}`);
-
-    const now = new Date();
+    const scheduledTime = DateTime.fromISO(scheduledTimeStr, { zone: ianaTimezone });
+    if ( ! scheduledTime.isValid) return null;
 
     // Determine if the scheduled time is today or tomorrow
-    const scheduledTime = new Date();
-    console.log(scheduledTime);
-    // these operations act as with local time
-    scheduledTime.setHours(scheduledHour);
-    scheduledTime.setMinutes(scheduledMinute);
-    if (scheduledTime <= now) {
+    if (scheduledTime <= DateTime.now()) {
         // Scheduled time is earlier than current ET time, so it's for tomorrow
         scheduledTime.setDate(scheduledTime.getDate() + 1);
     }
 
-    scheduledTime.setSeconds(0);
-    scheduledTime.setMilliseconds(0);
-
-    return scheduledTime;
+    return scheduledTime.toJSDate();
 }
 
 async function handleMatchCommand(interaction) {

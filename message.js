@@ -1,4 +1,6 @@
+const { ianaTimezone } = require("./base");
 const { env } = require("./env");
+const { DateTime } = require("luxon");
 
 const MESSAGE_WELCOME = 1;
 const MESSAGE_HELLO = 2;
@@ -26,8 +28,8 @@ const invalidFuMessage = () => decorate('Fu must be 25 or a multiple of 10.');
 const requiredFuMessage = () => decorate('Fu is required to calculate score for this hand');
 const pointsTsumoMessage = (han, fu, isDealer, pointsPerPlayer) => decorate(`A ${han}h ${fu > 0? `${fu}f ` : ""}${isDealer ? 'dealer ' : ''}tsumo scores ${isDealer ? `${pointsPerPlayer * 2} all` : `${pointsPerPlayer}/${pointsPerPlayer * 2}`}`);
 const pointsRonMessage = (han, fu, isDealer, totalPoints) => decorate(`A ${han}h ${fu > 0? `${fu}f ` : ""}${isDealer ? 'dealer ' : ''}ron scores ${totalPoints} points`); 
-const matchInProgressMessage = (players, capacity, playerMentions, scheduledTime) => decorate(`Matchmaking started!\n${scheduledTime? "Scheduled for " + new Date(scheduledTime).toLocaleString('en-US', { timeZone: 'America/New_York' }) + " Eastern\n": ""}Players (${players.length}/${capacity}):\n${playerMentions}\nReact with 👍 to join!`);
-const matchCompletedMessage = (forced, players, capacity, playerMentions, scheduledTime) => decorate(`Matchmaking completed${forced ? ' (skipped)' : ''}!\n${scheduledTime? "Scheduled for " + new Date(scheduledTime).toLocaleString('en-US', { timeZone: 'America/New_York' }) + " Eastern\n": ""}Players (${players.length}/${capacity}):\n${playerMentions}`);
+const matchInProgressMessage = (players, capacity, playerMentions, scheduledTime) => decorate(`Matchmaking started!\n${scheduledTime? "Scheduled for " + DateTime.fromJSDate(new Date(scheduledTime), {zone: ianaTimezone}).toLocaleString(DateTime.DATETIME_FULL) + "\n": ""}Players (${players.length}/${capacity}):\n${playerMentions}\nReact with 👍 to join!`);
+const matchCompletedMessage = (forced, players, capacity, playerMentions, scheduledTime) => decorate(`Matchmaking completed${forced ? ' (skipped)' : ''}!\n${scheduledTime? "Scheduled for " + DateTime.fromJSDate(new Date(scheduledTime), {zone: ianaTimezone}).toLocaleString(DateTime.DATETIME_FULL) + "\n": ""}Players (${players.length}/${capacity}):\n${playerMentions}`);
 const matchJoinNotifMessage = (players) => decorate(`Please join the match!\n${players.map(id => `<@${id}>`).join('\n')}`);
 const matchCanceledMessage = () => decorate('Matchmaking canceled.');
 const friendCodeValidationFailedMessage = () => decorate('Friend code must be 1 to 9 digits.');
