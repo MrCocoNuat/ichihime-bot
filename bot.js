@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits, REST, Routes } = require('discord.js');
 const { token, clientId, guildId, welcomeChannelId } = require('./env');
 const { commands }  = require('./commands');
 const attachListeners = require('./listeners');
+const { refreshRolesMessage } = require('./roles/roles');
 
 const rest = new REST({ version: '10' }).setToken(token);
 (async () => {
@@ -25,11 +26,12 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions
     ],
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'GUILD_MEMBER']
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER']
 });
 
 client.once('clientReady', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    refreshRolesMessage(client);
 });
 
 attachListeners(client, welcomeChannelId);

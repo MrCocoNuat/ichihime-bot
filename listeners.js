@@ -13,6 +13,7 @@ const {
     COMMAND_SET_FRIEND_CODE
 } = require('./commands');
 const { welcomeMessage } = require('./message');
+const { handleRolesReactionAdd, handleRolesReactionRemove} = require('./roles/roles');
 
 function fetchReactionAndMessage(reaction) {
     return (async () => {
@@ -62,11 +63,13 @@ function attachListeners(client, welcomeChannelId) {
     client.on('messageReactionAdd', async (reaction, user) => {    
         if (!(await fetchReactionAndMessage(reaction))) return;
         handleMatchReactionAdd(reaction, user);
+        handleRolesReactionAdd(reaction, user);
     });
 
     client.on('messageReactionRemove', async (reaction, user) => {
         if (!(await fetchReactionAndMessage(reaction))) return;
         handleMatchReactionRemove(reaction, user);
+        handleRolesReactionRemove(reaction, user);
     });
 
     client.on('guildMemberAdd', async member => {

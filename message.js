@@ -18,6 +18,7 @@ const MESSAGE_FRIEND_CODE_SAVED = 13;
 const MESSAGE_SHOW_HAND_VALIDATION_FAILED = 14;
 const MESSAGE_SHOW_HAND = 15;
 const MESSAGE_MATCH_TIME_VALIDATION_FAILED = 16;
+const MESSAGE_ROLES = 17;
 
 const decorate = (str) => ((env?.toLowerCase() != "prod" && env?.toLowerCase() != "production")? `⚠️ Bot running in environment: ${env}\n` : "") + str; 
 
@@ -38,11 +39,12 @@ const friendCodeSavedMessage = (friendCode) => decorate(`Your friend code has be
 const showHandValidationFailedMessage = (input) => decorate(`input "${input}" is not a valid set of tiles`);
 const showHandMessage = (tiles) => decorate(tiles.map(emojiFragment).join(''));
 const matchTimeValidationFailedMessage = () => decorate('Invalid scheduled time format. Please use HH:MM in 24-hour format.');
+const rolesMessage = () => decorate('React to set cosmetic roles! Which sangenpai (dragon tile) is your favorite?');
 
 
-function emojiFragment(tile) {
+function emojiObj(tile) {
     // emoji-specific IDs
-    const emojiMap = {
+        const emojiMap = {
         m: [
             { name: '1m', id: '1422069333949153402' },
             { name: '2m', id: '1422069338479001671' },
@@ -89,16 +91,25 @@ function emojiFragment(tile) {
             { name: '7z', id: '1422209455201849394' }
         ]
     };
-    let emojiObj;
+    let returnObj;
     if (tile.num === '0') {
         // can't be an honor tile
-        emojiObj = emojiMap[tile.suit][9];
+        returnObj = emojiMap[tile.suit][9];
     } else {
-        emojiObj = emojiMap[tile.suit][parseInt(tile.num) - 1];
+        returnObj = emojiMap[tile.suit][parseInt(tile.num) - 1];
     }
-    return `<:${emojiObj.name}:${emojiObj.id}>`;
+    return returnObj;
 }
 
+function emojiFragment(tile) {
+    const returnObj = emojiObj(tile);
+    return `<:${returnObj.name}:${returnObj.id}>`;
+}
+
+function emojiId(tile) {
+    const returnObj = emojiObj(tile);
+    return returnObj.id;
+}
 
 
 module.exports = {
@@ -117,5 +128,9 @@ module.exports = {
     friendCodeSavedMessage,
     showHandValidationFailedMessage,
     showHandMessage,
-    matchTimeValidationFailedMessage
+    matchTimeValidationFailedMessage,
+    rolesMessage,
+    emojiFragment,
+    emojiId,
+    emojiObj
 }
