@@ -2,12 +2,9 @@
   "name": "ichihime-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "bot.js",
   "keywords": [],
-  "author": "",
+  "author": "MrCocoNuat",
   "license": "UNLICENSED",
   "private": true,
   "type": "commonjs",
