@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits, REST, Routes } = require('discord.js');
 const { token, clientId, guildId, welcomeChannelId } = require('./env');
 const { commands }  = require('./commands');
 const attachListeners = require('./listeners');
-const { refreshRolesMessage } = require('./roles/roles');
+const { refreshRolesMessages } = require('./roles/roles');
 
 const rest = new REST({ version: '10' }).setToken(token);
 (async () => {
@@ -31,7 +31,7 @@ const client = new Client({
 
 client.once('clientReady', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    refreshRolesMessage(client);
+    refreshRolesMessages(client);
 });
 
 attachListeners(client, welcomeChannelId);

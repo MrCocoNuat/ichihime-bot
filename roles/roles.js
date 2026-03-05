@@ -1,43 +1,53 @@
-const { rolesChannelId, roleIdHaku, roleIdHatsu, roleIdChun, rolesMessageId} = require('../env.js');
-const { rolesMessage, emojiId } = require('../message.js');
+const { rolesChannelId, roleIdHaku, roleIdHatsu, roleIdChun, colorRolesMessageId, roleIdDrg, otherGameRolesMessageId} = require('../env.js');
+const { colorRolesMessage, otherGameRolesMessage, emojiId } = require('../message.js');
 
+// warning! undefined and null as keys don't operate as well as you'd like! use an actual dummy string value instead
+const rolesMessages = ({
+    [colorRolesMessageId]: colorRolesMessage,
+    [otherGameRolesMessageId]: otherGameRolesMessage 
+})
 
+// map by id and then if null by name (default emoji)
 const emojiRoleMap = ({
-    [emojiId({ num: 5, suit: 'z' })]: roleIdHaku,
-    [emojiId({ num: 6, suit: 'z' })]: roleIdHatsu,
-    [emojiId({ num: 7, suit: 'z' })]: roleIdChun
+    [emojiId({ num: 5, suit: 'z' })]: {[colorRolesMessageId]: roleIdHaku},
+    [emojiId({ num: 6, suit: 'z' })]: {[colorRolesMessageId]: roleIdHatsu},
+    [emojiId({ num: 7, suit: 'z' })]: {[colorRolesMessageId]: roleIdChun},
+    ["⛏️"]: {[otherGameRolesMessageId]: roleIdDrg}
 });
 
-async function refreshRolesMessage(client) {
+async function refreshRolesMessages(client) {
     const channel = await client.channels.fetch(rolesChannelId);
-    console.log(`Refreshing roles message... id ${rolesMessageId}`);
-    if (rolesMessageId){
-        // Message already exists
-        const msg = await channel.messages.fetch(rolesMessageId);
-        msg.edit(rolesMessage());
-        return;
-    } 
-    // Send new message
-    const msg = await channel.send(rolesMessage());
-    // React with each emoji
-    for (const emoji of Object.keys(emojiRoleMap)) {
-        await msg.react(emoji);
-    }
+    
+    Object.entries(rolesMessages).forEach(async ([id, contentGetter]) => {
+        console.log(`Refreshing roles message... id ${id}`);
+        if (id !== "null"){ // autocoerce to string... figure out a defaulting later
+            // Message already exists
+            const msg = await channel.messages.fetch(id);
+            msg.edit(contentGetter());
+            return;
+        } 
+        // Send new message
+        const msg = await channel.send(contentGetter());
+        // React with each emoji that belongs on the message
+        for (const [emoji, messageObj] of Object.entries(emojiRoleMap)) {
+            if (messageObj[id]) await msg.react(emoji);
+        }
+    });
 }
 
 async function handleRolesReactionAdd(reaction, user) {
     console.log('Handling roles reaction add...');
     if (reaction.partial) await reaction.fetch();
     if (user.bot) return;
-    if (reaction.message.id !== rolesMessageId) return;
-    console.log(`step1: ${reaction.emoji.id}`);
-    console.log(emojiRoleMap);
-    const roleId = emojiRoleMap[reaction.emoji.id];
+
+    const messageObj = emojiRoleMap[reaction.emoji.id] ?? emojiRoleMap[reaction.emoji.name];
+    const roleId = messageObj[reaction.message.id];
+    console.log(`emoji, role: ${reaction.emoji.id ?? reaction.emoji.name}, ${roleId}`);
     if (!roleId) return;
-    console.log("step2");
+
     const member = await reaction.message.guild.members.fetch(user.id);
     if (!member) return;
-    console.log("step3");
+
     if (!member.roles.cache.has(roleId)) {
         console.log(`Adding role ${roleId} to user ${user.id}`);
         await member.roles.add(roleId);
@@ -45,11 +55,13 @@ async function handleRolesReactionAdd(reaction, user) {
 }
 
 async function handleRolesReactionRemove(reaction, user) {
+    console.log("Handling roles reaction remove...")
     if (reaction.partial) await reaction.fetch();
     if (user.bot) return;
-    if (reaction.message.id !== rolesMessageId) return;
 
-    const roleId = emojiRoleMap[reaction.emoji.id];
+    const messageObj = emojiRoleMap[reaction.emoji.id] ?? emojiRoleMap[reaction.emoji.name];
+    const roleId = messageObj[reaction.message.id];
+    console.log(`emoji, role: ${reaction.emoji.id ?? reaction.emoji.name}, ${roleId}`);
     if (!roleId) return;
 
     const member = await reaction.message.guild.members.fetch(user.id);
@@ -64,7 +76,7 @@ async function handleRolesReactionRemove(reaction, user) {
 
 module.exports = {
     emojiRoleMap,
-    refreshRolesMessage,
+    refreshRolesMessages,
     handleRolesReactionAdd,
     handleRolesReactionRemove
 }

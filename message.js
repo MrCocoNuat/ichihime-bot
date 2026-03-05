@@ -39,7 +39,8 @@ const friendCodeSavedMessage = (friendCode) => decorate(`Your friend code has be
 const showHandValidationFailedMessage = (input) => decorate(`input "${input}" is not a valid set of tiles`);
 const showHandMessage = (tiles) => decorate(tiles.map(emojiFragment).join(''));
 const matchTimeValidationFailedMessage = () => decorate('Invalid scheduled time format. Please use HH:MM in 24-hour format.');
-const rolesMessage = () => decorate('React to set cosmetic roles! Which sangenpai (dragon tile) is your favorite?');
+const colorRolesMessage = () => decorate('React to set cosmetic roles! Which sangenpai (dragon tile) is your favorite?');
+const otherGameRolesMessage = () => decorate('React to let us know you play these other games and chat with players! \n ⛏️: Deep Rock Galactic'); // fine to hardcode these for now
 
 
 function emojiObj(tile) {
@@ -129,7 +130,8 @@ module.exports = {
     showHandValidationFailedMessage,
     showHandMessage,
     matchTimeValidationFailedMessage,
-    rolesMessage,
+    colorRolesMessage,
+    otherGameRolesMessage,
     emojiFragment,
     emojiId,
     emojiObj

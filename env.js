@@ -9,7 +9,9 @@ const rolesChannelId = process.env.ROLES_CHANNEL_ID;
 const roleIdHaku = process.env.ROLE_ID_HAKU;
 const roleIdHatsu = process.env.ROLE_ID_HATSU;
 const roleIdChun = process.env.ROLE_ID_CHUN;
-const rolesMessageId = process.env.ROLES_MESSAGE_ID;
+const colorRolesMessageId = process.env.ROLES_MESSAGE_ID;
+const roleIdDrg = process.env.ROLE_ID_DRG;
+const otherGameRolesMessageId = process.env.ROLES_MESSAGE_ID_2;
 const env = process.env.NODE_ENV
 
 module.exports = {
@@ -21,6 +23,8 @@ module.exports = {
     roleIdHaku,
     roleIdHatsu,
     roleIdChun,
-    rolesMessageId,
+    colorRolesMessageId,
+    roleIdDrg,
+    otherGameRolesMessageId,
     env
 };
