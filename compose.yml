@@ -1,0 +1,8 @@
+services:
+  ichihime-bot:
+    build: .
+    env_file: .env
+    volumes:
+      - ./public.sqlite:/app/public.sqlite
+    restart: unless-stopped
+
