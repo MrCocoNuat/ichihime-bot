@@ -4,6 +4,8 @@ const { commands } = require('./commands');
 const attachListeners = require('./listeners');
 const { refreshRolesMessages } = require('./roles/roles');
 
+console.log("ichihime-bot version 0.1.2");
+
 // Transient network errors that bot.js will self-recover from
 const TRANSIENT_ERRORS = ['ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'EPIPE', 'EAI_AGAIN'];
 
