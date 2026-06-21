@@ -8,6 +8,7 @@ RUN npm ci --omit=dev
 
 # Copy the rest of the source
 COPY . .
+RUN chown -R node:node /app
 
 # Run as non-root user for security
 USER node
